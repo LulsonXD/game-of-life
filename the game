@@ -13,25 +13,44 @@
 <body>
     <form name="my">
         
-        <div class="form"><span>Number of rows:  </span><input type="number" value="50" name="rows"></div><br><br>
-        <div class="form"><span>Number of columns:  </span><input type="number" value="50" name="columns"></div><br><br>
-        <div class="form"><span>Number of herbivores:  </span><input type="number" value="1000" name="herbs"></div><br><br>
-        <div class="form"><span>Number of predators:  </span><input type="number" value="40" name="preds"></div><br><br>
-        <div class="form"><span>Herbivores lifespan:  </span><input type="number" value="5" name="hLife"></div><br><br>
-        <div class="form"><span>Predators lifespan:  </span><input type="number" value="5" name="pLife"></div><br><br>
-        <div class="form"><span>Herbivores birth rate:  </span><input type="number" value="3" name="hBirth"></div><br><br>
-        <div class="form"><span>Predators birth rate:  </span><input type="number" value="3" name="pBirth"></div><br><br>
-        <div class="form"><span>Predators starvation death:  </span><input type="number" value="2" name="starve"></div><br><br>
-        <input type="button" value="Render" onclick="renderScene()">
+        <div class="form"><span>Number of rows:  </span><input type="number" value="100" name="rows"></div><br><br>
+        <div class="form"><span>Number of columns:  </span><input type="number" value="100" name="columns"></div><br><br>
+        <div class="form"><span>Number of herbivores:  </span><input type="number" value="500" name="herbs"></div><br><br>
+        <div class="form"><span>Number of predators:  </span><input type="number" value="80" name="preds"></div><br><br>
+        <div class="form"><span>Herbivores lifespan:  </span><input type="number" value="10" name="hLife"></div><br><br>
+        <div class="form"><span>Predators lifespan:  </span><input type="number" value="14" name="pLife"></div><br><br>
+        <div class="form"><span>Herbivores minimal birth rate:  </span><input type="number" value="3" name="hMinBirth"></div><br><br>
+        <div class="form"><span>Herbivores maximal birth rate:  </span><input type="number" value="7" name="hMaxBirth"></div><br><br>
+        <div class="form"><span>Predators minimal birth rate:  </span><input type="number" value="5" name="pMinBirth"></div><br><br>
+        <div class="form"><span>Predators maximal birth rate:  </span><input type="number" value="8" name="pMaxBirth"></div><br><br>
+        <div class="form"><span>Predators starvation death:  </span><input type="number" value="6" name="starve"></div><br><br>
+        <div class="form"><span>Predators vision range:  </span><input type="number" value="5" name="pVision"></div><br><br>
+        <div class="form"><span>Herbivores vision range:  </span><input type="number" value="1" name="hVision"></div><br><br>
+        <!--<div class="form"><span>Herbivores time in childhood:  </span><input type="number" value="2" name="hChild"></div><br><br>
+        <div class="form"><span>Predators time in childhood:  </span><input type="number" value="2" name="pChild"></div><br><br>-->
+        <input type="button" value="Create board" onclick="renderScene()">
         <br>
     </form>
     <script>
+        var hLife, pLife, hMinBirth, hMaxBirth, pMinBirth, pMaxBirth, hVision, pVision, starve;
+        //var hChild = parseInt(document.forms.my.elements.hChild.value);
+        //var pChild = parseInt(document.forms.my.elements.pChild.value);
+        var pCount, hCount;
         var max, final;
         var dots = [];
         var rows, cols;
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
         function renderScene(){
+            hLife = parseInt(document.forms.my.elements.hLife.value);
+            pLife = parseInt(document.forms.my.elements.pLife.value);
+            hMinBirth = parseInt(document.forms.my.elements.hMinBirth.value);
+            hMaxBirth = parseInt(document.forms.my.elements.hMaxBirth.value);
+            pMinBirth = parseInt(document.forms.my.elements.pMinBirth.value);
+            pMaxBirth = parseInt(document.forms.my.elements.pMaxBirth.value);
+            hVision = parseInt(document.forms.my.elements.hVision.value);
+            pVision = parseInt(document.forms.my.elements.pVision.value);
+            starve = parseInt(document.forms.my.elements.starve.value);
             dots = [];
             rows = parseInt(document.forms.my.elements.rows.value);
             cols = parseInt(document.forms.my.elements.columns.value);
@@ -65,21 +84,38 @@
             if(!board){
                 var placeBtn = document.createElement('input');
                 var startBtn = document.createElement('input');
+                var stopBtn = document.createElement('input');
                 placeBtn.type = 'button';
                 startBtn.type = 'button';
-                placeBtn.value = 'Place animals';
+                stopBtn.type = 'button';
+                placeBtn.value = 'Render scene';
                 startBtn.value = 'Start';
+                stopBtn.value = 'Stop';
                 placeBtn.style.position = 'relative';
                 placeBtn.style.left = String(cols / 2 * 10 - 70) + 'px';
                 startBtn.style.position = 'relative';
                 startBtn.style.left = String(cols / 2 * 10 - 55) + 'px';
+                stopBtn.style.position = 'relative';
+                stopBtn.style.left = String(cols / 2 * 10 - 40) + 'px';
                 var div = document.createElement('div');
                 div.id = 'board';
                 var br = document.createElement('br');
                 placeBtn.setAttribute('onclick','placeAnimals(document.forms.my.elements.herbs.value, document.forms.my.elements.preds.value)');
                 startBtn.setAttribute('onclick','startLife()');
+                stopBtn.setAttribute('onclick','clearInterval(intervalId);');
+                hCount = document.createElement('span');
+                pCount = document.createElement('span');
+                hCount.textContent = 'Herbivores: ';
+                pCount.textContent = '  Predators: ';
+                hCount.style.position = 'relative';
+                pCount.style.position = 'relative';
+                hCount.style.left = String(cols / 2 * 10 - 25) + 'px';
+                pCount.style.left = String(cols / 2 * 10 - 10) + 'px';
                 div.appendChild(placeBtn);
                 div.appendChild(startBtn);
+                div.appendChild(stopBtn);
+                div.appendChild(hCount);
+                div.appendChild(pCount);
                 div.appendChild(br);
                 div.appendChild(canvas);
                 document.body.appendChild(div);
@@ -93,13 +129,7 @@
                 alert('Error: area overpopulated');
             }
             else{
-                var hLife = parseInt(document.forms.my.elements.hLife.value);
-                var pLife = parseInt(document.forms.my.elements.pLife.value);
-                var hBirth = parseInt(document.forms.my.elements.hBirth.value);
-                var pBirth = parseInt(document.forms.my.elements.pBirth.value);
-                var starve = parseInt(document.forms.my.elements.starve.value);
                 renderScene(rows, cols);
-                
                 holder = JSON.parse(JSON.stringify(dots));
                 var x, y, i, j;
                 h = herbs;
@@ -110,9 +140,8 @@
                     y = Math.floor(Math.random() * holder[x].length);
                     i = holder[x][y].i;
                     j = holder[x][y].j;
-                    dots[i][j].class = 'herbivore';
-                    dots[i][j].life = hLife;
-                    dots[i][j].birth = hBirth;
+                    var hBirth = hMaxBirth - Math.floor(Math.random() * Math.abs(hMaxBirth - hMinBirth));
+                    dots[i][j] = {class:'herbivore', i:i, j:j, moved:false, life: hLife, birth: hBirth, vision: hVision, spooked:false};
                     holder[x].splice(y, 1);
                     if (holder[x].length == 0){holder.splice(x, 1)}
                     context.beginPath();
@@ -130,7 +159,8 @@
                     y = Math.floor(Math.random() * holder[x].length);
                     i = holder[x][y].i;
                     j = holder[x][y].j;
-                    dots[i][j].class = 'predator';
+                    var pBirth = pMaxBirth - Math.floor(Math.random() * Math.abs(pMaxBirth - pMinBirth));
+                    dots[i][j] = {class:'predator', i:i, j:j, moved:false, life: pLife, birth: pBirth, vision: pVision, starve:starve};
                     holder[x].splice(y, 1);
                     if (holder[x].length == 0){holder.splice(x, 1)}
                     context.beginPath();
@@ -141,17 +171,22 @@
                 }
             }
         }
+        var intervalId;
         function startLife(){
-            setInterval(function(){
+            intervalId = setInterval(function(){
                 for (let i = 0; i < rows; ++i){
                     for (let j = 0; j < cols; ++j){
                         if (!dots[i][j].moved){
-                            if (dots[i][j].class == 'predator'){
+                            dots[i][j].life = dots[i][j].life - 1;
+                            dots[i][j].birth = dots[i][j].birth - 1;
+                            if (dots[i][j].life <= 0 || dots[i][j].starve <= 0) dots[i][j] = {class:'empty', i:i, j:j, moved:false}
+                            else{
                                 var eatables = [];
                                 var empties = [];
+                                var competitors = [];
                                 for (let k = 0; k < 3; ++k){
                                     for (let t = 0; t < 3; ++t){
-                                        if (k == 1 && t == 1){continue}
+                                        if (k == 1 && t == 1) continue;
                                         let x, y;
                                         x = i + k - 1;
                                         if (x < 0){x = rows + x}
@@ -159,75 +194,152 @@
                                         y = j + t - 1;
                                         if (y < 0){y = cols + y}
                                         if (y > cols - 1){y = y - cols}
-                                        //console.log(String(x)+' '+String(y));
                                         if (dots[x][y].class == 'herbivore'){eatables.push(dots[x][y])}
                                         if (dots[x][y].class == 'empty'){empties.push(dots[x][y])}
+                                        if (dots[x][y].class == 'predator'){competitors.push(dots[x][y])}
                                     }
                                 }
-                                if (eatables.length > 0){
-                                    var n = Math.floor(Math.random() * eatables.length);
-                                    dots[eatables[n].i][eatables[n].j].moved = true;
-                                    dots[eatables[n].i][eatables[n].j].class = 'predator';
-                                    dots[i][j].class = 'empty';
-                                    context.beginPath();
-                                    context.rect(eatables[n].j * 10 + 0.5, eatables[n].i * 10 + 0.5, 9, 9);
-                                    context.fillStyle = 'red';
-                                    context.fill();
-                                    context.stroke();
-                                    context.closePath();
-                                    context.beginPath();
-                                    context.rect(j * 10 + 0.5, i * 10 + 0.5, 9, 9);
-                                    context.fillStyle = 'silver';
-                                    context.fill();
-                                    context.stroke();
-                                    context.closePath();
+                                if (dots[i][j].birth == 0){
+                                    if (empties.length == 0) dots[i][j].birth = 1
+                                    else{
+                                        n = Math.floor(Math.random() * empties.length);
+                                        if (dots[i][j].class == 'herbivore' && !dots[i][j].spooked) {
+                                            var hBirth = hMaxBirth - Math.floor(Math.random() * Math.abs(hMaxBirth - hMinBirth));
+                                            dots[empties[n].i][empties[n].j] = {class:'herbivore', i:empties[n].i, j:empties[n].j, moved:true, life: hLife, birth: hBirth, vision: hVision};
+                                            dots[i][j].birth = hBirth;
+                                        }
+                                        if (dots[i][j].class == 'predator'){
+                                            var pBirth = pMaxBirth - Math.floor(Math.random() * Math.abs(pMaxBirth - pMinBirth));
+                                            dots[empties[n].i][empties[n].j] = {class:'predator', i:empties[n].i, j:empties[n].j, moved:true, life: pLife, birth: pBirth, vision: pVision, starve:starve};
+                                            dots[i][j].birth = pBirth;
+                                        }
+                                        empties.splice(n, 1);
+                                    }
                                 }
-                                else {
+                                if (dots[i][j].class == 'herbivore'){
+                                    var path, danger, targetFound = false, m = 0, runways = [];
                                     if (empties.length > 0){
-                                        var n;
-                                        var targetFound = false;
-                                        var m = 0;
-                                        max = 0;
-                                        final = false;
-                                        for (let c = 0; c < empties.length; ++c){
-                                            var res = scan(empties[c].i, empties[c].j, 5);
-                                            if (res != false && res > m){
-                                                m = res;
-                                                n = c;
-                                                targetFound = true;
+                                        for (let k = 0; k < 3; ++k){
+                                            for (let t = 0; t < 3; ++t){
+                                                if (k == 1 && t == 1) continue;
+                                                let x, y;
+                                                x = i + k - 1;
+                                                if (x < 0){x = rows + x}
+                                                if (x > rows - 1){x = x - rows}
+                                                y = j + t - 1;
+                                                if (y < 0){y = cols + y}
+                                                if (y > cols - 1){y = y - cols}
+                                                var res = scan(x, y, dots[i][j].vision, 'predator');
+                                                if (res != false && res > m){
+                                                    m = res;
+                                                    danger = dots[x][y];
+                                                    targetFound = true;
+                                                    dots[i][j].spooked = true;
+                                                }
                                             }
-                                        }                                        
-                                        if (!targetFound){n = Math.floor(Math.random() * empties.length);}
-                                        dots[empties[n].i][empties[n].j].moved = true;
-                                        dots[empties[n].i][empties[n].j].class = 'predator';
-                                        dots[i][j].class = 'empty';
-                                        context.beginPath();
-                                        context.rect(empties[n].j * 10 + 0.5, empties[n].i * 10 + 0.5, 9, 9);
-                                        context.fillStyle = 'red';
-                                        context.fill();
-                                        context.stroke();
-                                        context.closePath();
-                                        context.beginPath();
-                                        context.rect(j * 10 + 0.5, i * 10 + 0.5, 9, 9);
-                                        context.fillStyle = 'silver';
-                                        context.fill();
-                                        context.stroke();
-                                        context.closePath();
+                                        }
+                                        if (targetFound){
+                                            for (let c = 0; c < empties.length; ++c){
+                                                if (!(Math.abs(empties[c].i - danger.i) == 1 && empties[c].j == danger.j) || (Math.abs(empties[c].j - danger.j) == 1 && empties[c].i == danger.i)) runways.push(empties[c]);
+                                            }
+                                            if (runways.length == 0) targetFound = false;
+                                        }
+                                        if (!targetFound) {
+                                            n = Math.floor(Math.random() * empties.length);
+                                            path = empties[n];
+                                        }
+                                        else {
+                                            n = Math.floor(Math.random() * runways.length);
+                                            path = runways[n];
+                                        }
+                                        dots[path.i][path.j] = dots[i][j];
+                                        dots[path.i][path.j].i = path.i;
+                                        dots[path.i][path.j].j = path.j;
+                                        dots[path.i][path.j].moved = true; 
+                                        dots[i][j] = {class:'empty', i:i, j:j, moved:false};
+                                    }
+                                    else dots[i][j] = {class:'empty', i:i, j:j, moved:false};
+                                }
+                                if (dots[i][j].class == 'predator') {
+                                    if (eatables.length > 0){
+                                        var n = Math.floor(Math.random() * eatables.length);
+                                        dots[eatables[n].i][eatables[n].j] = dots[i][j];
+                                        dots[eatables[n].i][eatables[n].j].i = eatables[n].i;
+                                        dots[eatables[n].i][eatables[n].j].j = eatables[n].j;
+                                        dots[eatables[n].i][eatables[n].j].moved = true;
+                                        dots[eatables[n].i][eatables[n].j].starve = starve;
+                                        dots[i][j] = {class:'empty', i:i, j:j, moved:false};
+                                    }
+                                    else{
+                                        var n = Math.floor(Math.random() * competitors.length);
+                                        if (competitors.length > 0 && (dots[i][j].starve < starve / 2 || dots[competitors[n].i][competitors[n].j].starve < starve / 2)){
+                                            var odds = Math.floor(Math.random());
+                                            if (odds > 0){
+                                                dots[i][j] = {class:'empty', i:i, j:j, moved:false};
+                                                dots[competitors[n].i][competitors[n].j].starve = starve;
+                                            }
+                                            else{
+                                                dots[competitors[n].i][competitors[n].j] = {class:'empty', i:i, j:j, moved:false};
+                                                dots[i][j].starve = starve;
+                                            }
+                                        }
+                                        else{
+                                            dots[i][j].starve = dots[i][j].starve - 1;
+                                            if (empties.length > 0){
+                                                var n, targetFound = false, m = 0;
+                                                max = 0;
+                                                final = false;
+                                                for (let c = 0; c < empties.length; ++c){
+                                                    var res = scan(empties[c].i, empties[c].j, dots[i][j].vision, 'herbivore');
+                                                    if (res != false && res > m){
+                                                        m = res;
+                                                        n = c;
+                                                        targetFound = true;
+                                                    }
+                                                }                                        
+                                                if (!targetFound){n = Math.floor(Math.random() * empties.length);}
+                                                dots[empties[n].i][empties[n].j] = dots[i][j];
+                                                dots[empties[n].i][empties[n].j].moved = true;
+                                                dots[empties[n].i][empties[n].j].i = empties[n].i;
+                                                dots[empties[n].i][empties[n].j].j = empties[n].j;
+                                                dots[i][j] = {class:'empty', i:i, j:j, moved:false};                                       
+                                            }
+                                            else dots[i][j] = {class:'empty', i:i, j:j, moved:false};
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+                let preds = 0, herbs = 0;
                 for (let i = 0; i < rows; ++i){
                     for (let j = 0; j < cols; ++j){
+                        if (dots[i][j].class == 'herbivore') {
+                            if (dots[i][j].life < hLife / 2) context.fillStyle = '#017500'
+                            else context.fillStyle = '#018700';
+                            dots[i][j].spooked = false;
+                            ++herbs;
+                        }
+                        if (dots[i][j].class == 'predator') {
+                            if (dots[i][j].life < pLife / 2) context.fillStyle = '#c90300'
+                            else context.fillStyle = '#e10000';
+                            ++preds;
+                        }
+                        if (dots[i][j].class == 'empty') context.fillStyle = 'silver';
+                        context.beginPath();
+                        context.rect(j * 10 + 1, i * 10 + 1, 9, 9);
+                        context.fill();
+                        context.closePath();
                         dots[i][j].moved = false;
                     }
                 }
+                hCount.textContent = 'Herbivores: ' + String(herbs);
+                pCount.textContent = '  Predators: ' + String(preds);
                 context.closePath();
-            }, 1000);
+            }, 700);
         }
-        function scan(i, j, range){
+        function scan(i, j, range, type){
             if (range > 0){
                 for (let k = 0; k < 3; ++k){
                     for (let t = 0; t < 3; ++t){
@@ -238,9 +350,9 @@
                         var y = j + t - 1;
                         if (y < 0){y = cols + y}
                         if (y > cols - 1){y = y - cols}
-                        if (dots[x][y].class == 'herbivore'){if (range > max){final = range; max = range;}}
+                        if (dots[x][y].class == type){if (range > max){final = range; max = range;}}
                         else{
-                            scan(x, y, range - 1);
+                            scan(x, y, range - 1, type);
                         }
                     }
                 }
